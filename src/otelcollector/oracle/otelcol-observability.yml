@@ -1,0 +1,23 @@
+# Copyright The OpenTelemetry Authors
+# SPDX-License-Identifier: Apache-2.0
+
+
+exporters:
+  splunk_hec:
+    token: "${env:SPLUNK_HEC_TOKEN}"
+    endpoint: "${env:SPLUNK_HEC_URL}"
+  signalfx:
+    access_token: "${env:SPLUNK_ACCESS_TOKEN}"
+    api_url: "https://api.us1.signalfx.com"
+    ingest_url: "https://ingest.us1.signalfx.com"
+    sync_host_metadata: true
+    correlation:
+
+service:
+  pipelines:
+    traces:
+      exporters: [signalfx, splunk_hec, spanmetrics]
+    metrics:
+      exporters: [signalfx, splunk_hec]
+    logs:
+      exporters: [splunk_hec]
