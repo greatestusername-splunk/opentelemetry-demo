@@ -14,74 +14,7 @@ networks:
     driver: bridge
 
 services:
-
-  # # ******************
-  # # Dependent Services
-  # # ******************
-  # # Postgres used by Feature Flag service
-  # ffs_postgres:
-  #   image: postgres:16.0
-  #   container_name: postgres
-  #   user: postgres
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 120M
-  #   restart: unless-stopped
-  #   environment:
-  #     - POSTGRES_USER=ffs
-  #     - POSTGRES_DB=ffs
-  #     - POSTGRES_PASSWORD=ffs
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -d ffs -U ffs"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   logging: *logging
-
-  # # Kafka used by Checkout, Accounting, and Fraud Detection services
-  # kafka:
-  #   image: ${IMAGE_NAME}:${IMAGE_VERSION}-kafka
-  #   container_name: kafka
-  #   build:
-  #     context: ./
-  #     dockerfile: ./src/kafka/Dockerfile
-  #     cache_from:
-  #       - ${IMAGE_NAME}:${IMAGE_VERSION}-kafka
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 500M
-  #   restart: unless-stopped
-  #   environment:
-  #     - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-  #     - OTEL_EXPORTER_OTLP_ENDPOINT
-  #     - OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
-  #     - OTEL_RESOURCE_ATTRIBUTES
-  #     - OTEL_SERVICE_NAME=kafka
-  #     - KAFKA_HEAP_OPTS=-Xmx200m -Xms200m
-  #   healthcheck:
-  #     test: nc -z kafka 9092
-  #     start_period: 10s
-  #     interval: 5s
-  #     timeout: 10s
-  #     retries: 10
-  #   logging: *logging
-
-  # # Redis used by Cart service
-  # redis-cart:
-  #   image: redis:7.2-alpine
-  #   container_name: redis-cart
-  #   user: redis
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 20M
-  #   restart: unless-stopped
-  #   ports:
-  #     - "${REDIS_PORT}"
-  #   logging: *logging
-
+ 
   oracle:
     image: gvenzl/oracle-xe:21-slim-faststart
     build:
@@ -125,62 +58,10 @@ services:
     logging: *logging
     environment:
       - ENVOY_PORT
+      - SPLUNK_ACCESS_TOKEN=${SPLUNK_ACCESS_TOKEN}
+      - SPLUNK_HEC_TOKEN=${SPLUNK_HEC_TOKEN}
+      - SPLUNK_HEC_URL=${SPLUNK_HEC_URL}
     depends_on:
       oracle:
         condition: service_healthy
-
-  # # Prometheus
-  # prometheus:
-  #   image: quay.io/prometheus/prometheus:v2.47.0
-  #   container_name: prometheus
-  #   command:
-  #     - --web.console.templates=/etc/prometheus/consoles
-  #     - --web.console.libraries=/etc/prometheus/console_libraries
-  #     - --storage.tsdb.retention.time=1h
-  #     - --config.file=/etc/prometheus/prometheus-config.yaml
-  #     - --storage.tsdb.path=/prometheus
-  #     - --web.enable-lifecycle
-  #     - --web.route-prefix=/
-  #     - --enable-feature=exemplar-storage
-  #     - --enable-feature=otlp-write-receiver
-  #   volumes:
-  #     - ./src/prometheus/prometheus-config.yaml:/etc/prometheus/prometheus-config.yaml
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 300M
-  #   ports:
-  #     - "${PROMETHEUS_SERVICE_PORT}:${PROMETHEUS_SERVICE_PORT}"
-  #   logging: *logging
-
-  # opensearch:
-  #   image: opensearchproject/opensearch:latest
-  #   container_name: opensearch
-  #   environment:
-  #     - cluster.name=demo-cluster
-  #     - node.name=demo-node
-  #     - bootstrap.memory_lock=true
-  #     - discovery.type=single-node
-  #     - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
-  #     - "DISABLE_INSTALL_DEMO_CONFIG=true"
-  #     - "DISABLE_SECURITY_PLUGIN=true"
-  #   ulimits:
-  #     memlock:
-  #       soft: -1
-  #       hard: -1
-  #     nofile:
-  #       soft: 65536
-  #       hard: 65536
-  #   ports:
-  #     - "9200:9200"
-  #   logging: *logging
-
-  # dataprepper:
-  #   image: opensearchproject/data-prepper:latest
-  #   volumes:
-  #     - ./src/opensearch/pipelines.yaml:/usr/share/data-prepper/pipelines/pipelines.yaml
-  #     - ./src/opensearch/data-prepper-config.yaml:/usr/share/data-prepper/config/data-prepper-config.yaml
-  #   ports:
-  #     - "21892"
-  #   logging: *logging
 
