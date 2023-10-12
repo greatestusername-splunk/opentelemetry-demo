@@ -12,7 +12,7 @@ receivers:
             - "http://*"
             - "https://*"
   oracledb:
-    datasource: "oracle://sysdba:password@oracle:1521/XE"
+    datasource: "oracle://system:password@oracle:1521/XE"
 
 exporters:
   logging:
@@ -43,19 +43,11 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-<<<<<<< HEAD
       exporters: [spanmetrics]
     metrics:
       receivers: [oracledb, otlp, spanmetrics]
       processors: [filter/ottl, transform, batch]
       exporters: [signalfx]
-=======
-      exporters: [splunk_hec, spanmetrics]
-    metrics:
-      receivers: [oracledb, otlp, spanmetrics]
-      processors: [filter/ottl, transform, batch]
-      exporters: [splunk_hec]
->>>>>>> 86798e1 (testing this out)
     logs:
       receivers: [otlp]
       processors: [batch]
