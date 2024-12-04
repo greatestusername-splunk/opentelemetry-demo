@@ -2733,7 +2733,7 @@ spec:
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: service.name=$(OTEL_SERVICE_NAME),service.namespace=opentelemetry-demo,service.version=1.12.0
             - name: SPLUNK_ACCESS_TOKEN
-              value: 'pQ6dr_N_UhfIT6bUEkGmHA'
+              value: '$(SPLUNK_ACCESS_TOKEN)'
             - name: SPLUNK_API_URL
               value: 'https://api.us1.signalfx.com'
             - name: SPLUNK_INGEST_URL
