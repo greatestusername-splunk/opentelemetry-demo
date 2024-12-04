@@ -259,8 +259,8 @@ services:
       - FRONTEND_HOST
       - LOCUST_WEB_HOST
       - LOCUST_WEB_PORT
-      - GRAFANA_SERVICE_PORT
-      - GRAFANA_SERVICE_HOST
+      # - GRAFANA_SERVICE_PORT
+      # - GRAFANA_SERVICE_HOST
       - JAEGER_SERVICE_PORT
       - JAEGER_SERVICE_HOST
       - OTEL_COLLECTOR_HOST
@@ -282,8 +282,8 @@ services:
         condition: service_started
       jaeger:
         condition: service_started
-      grafana:
-        condition: service_started
+      # grafana:
+      #   condition: service_started
 
   # Imageprovider
   imageprovider:
@@ -562,23 +562,23 @@ services:
       - METRICS_STORAGE_TYPE=prometheus
     logging: *logging
 
-  # Grafana
-  grafana:
-    image: ${GRAFANA_IMAGE}
-    container_name: grafana
-    deploy:
-      resources:
-        limits:
-          memory: 100M
-    restart: unless-stopped
-    environment:
-      - "GF_INSTALL_PLUGINS=grafana-opensearch-datasource"
-    volumes:
-      - ./src/grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./src/grafana/provisioning/:/etc/grafana/provisioning/
-    ports:
-      - "${GRAFANA_SERVICE_PORT}"
-    logging: *logging
+  # # Grafana
+  # grafana:
+  #   image: ${GRAFANA_IMAGE}
+  #   container_name: grafana
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 100M
+  #   restart: unless-stopped
+  #   environment:
+  #     - "GF_INSTALL_PLUGINS=grafana-opensearch-datasource"
+  #   volumes:
+  #     - ./src/grafana/grafana.ini:/etc/grafana/grafana.ini
+  #     - ./src/grafana/provisioning/:/etc/grafana/provisioning/
+  #   ports:
+  #     - "${GRAFANA_SERVICE_PORT}"
+  #   logging: *logging
 
   # OpenTelemetry Collector
   otelcol:
@@ -611,6 +611,10 @@ services:
       - OTEL_COLLECTOR_HOST
       - OTEL_COLLECTOR_PORT_GRPC
       - OTEL_COLLECTOR_PORT_HTTP
+      - SPLUNK_ACCESS_TOKEN
+      - SPLUNK_API_URL
+      - SPLUNK_INGEST_URL
+      - SPLUNK_TRACE_URL
 
   # Prometheus
   prometheus:
